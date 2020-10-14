@@ -21,9 +21,11 @@ public class ScoreActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent!= null && intent.hasExtra("result")){
             int res = intent.getIntExtra("result", 0);
+            int numberOfCorrectAnswersInARowResult  = intent.getIntExtra("numberOfCorrectAnswersInARowResult", 0);
+
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             int max = sharedPreferences.getInt("max", 0);
-            String result = String.format("Ваш результат: %s \nВаш рекорд: %s" , res, max);
+            String result = String.format("Ваш результат: %s \nВаш рекорд: %s\n Количество верных ответов подряд: %s" , res, max,numberOfCorrectAnswersInARowResult );
             textView.setText(result);
 
 

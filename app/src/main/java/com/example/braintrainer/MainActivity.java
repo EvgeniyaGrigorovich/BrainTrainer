@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private int numberOfCorrectAnswersInARow = 0;
     private long globalCount;
     private long startTime = 15000;
+    private int numberOfCorrectAnswersInARowResult = 0;
 
     private static final Random RANDOM = new Random();
 
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Верно!", Toast.LENGTH_SHORT).show();
                 countOfWriteAnswers++;
                 numberOfCorrectAnswersInARow++;
+                numberOfCorrectAnswersInARowResult++;
             } else {
                 Toast.makeText(this, "Ошибка!", Toast.LENGTH_SHORT).show();
                 numberOfCorrectAnswersInARow = 0;
@@ -125,7 +127,10 @@ public class MainActivity extends AppCompatActivity {
             if (numberOfCorrectAnswersInARow == 5) {
                 timer.cancel();
                 globalCount += 3000;
-                startTime =globalCount;
+                startTime = globalCount;
+                if (numberOfCorrectAnswersInARowResult < numberOfCorrectAnswersInARow) {
+                    numberOfCorrectAnswersInARowResult = numberOfCorrectAnswersInARow;
+                }
                 numberOfCorrectAnswersInARow = 0;
                 timer();
             }
@@ -133,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
 
     public static String getTime(long ms) {
         int seconds = (int) ms / 1000;
@@ -162,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 gameOver = true;
                 Intent i = new Intent(MainActivity.this, ScoreActivity.class);
                 i.putExtra("result", countOfWriteAnswers);
+                i.putExtra("numberOfCorrectAnswersInARowResult", numberOfCorrectAnswersInARowResult);
                 startActivity(i);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 int max = preferences.getInt("max", 0);
