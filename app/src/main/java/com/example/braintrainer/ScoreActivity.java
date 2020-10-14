@@ -23,7 +23,7 @@ public class ScoreActivity extends AppCompatActivity {
             int res = intent.getIntExtra("result", 0);
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             int max = sharedPreferences.getInt("max", 0);
-            String result = String.format("Ваш результат: %s \nМаксимальный результат: %s" , res, max);
+            String result = String.format("Ваш результат: %s \nВаш рекорд: %s" , res, max);
             textView.setText(result);
 
 

@@ -1,6 +1,5 @@
 package com.example.braintrainer;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -35,10 +34,15 @@ public class MainActivity extends AppCompatActivity {
     private int countOfQuestions = 0;
     private int countOfWriteAnswers = 0;
     private boolean gameOver = false;
+    private int numberOfCorrectAnswersInARow = 0;
+    private long globalCount;
+    private long startTime = 15000;
 
     private static final Random RANDOM = new Random();
 
     private ArrayList<Button> options;
+
+    private CountDownTimer timer;
 
 
     @Override
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textViewTimer = findViewById(R.id.textView);
+        textViewTimer = findViewById(R.id.textViewCountDownTimer);
         textViewQuestion = findViewById(R.id.textViewQuestion);
         textViewScore = findViewById(R.id.textViewScore);
         button0 = findViewById(R.id.button0);
@@ -60,30 +64,7 @@ public class MainActivity extends AppCompatActivity {
         options.add(button3);
 
         playNext();
-
-        CountDownTimer timer = new CountDownTimer(12000, 100) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                textViewTimer.setText(getTime(millisUntilFinished));
-                if (millisUntilFinished<5000){
-                    textViewTimer.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                gameOver = true;
-                Intent i = new Intent(MainActivity.this, ScoreActivity.class);
-                i.putExtra("result", countOfWriteAnswers);
-                startActivity(i);
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                int max = preferences.getInt("max", 0);
-                if (countOfWriteAnswers>=max){
-                    preferences.edit().putInt("max", countOfWriteAnswers).apply();
-                }
-            }
-        };
-        timer.start();
+        timer();
 
 
     }
@@ -135,20 +116,62 @@ public class MainActivity extends AppCompatActivity {
             if (chooseAnswer == rightAnswer) {
                 Toast.makeText(this, "Верно!", Toast.LENGTH_SHORT).show();
                 countOfWriteAnswers++;
-                countOfQuestions++;
+                numberOfCorrectAnswersInARow++;
             } else {
                 Toast.makeText(this, "Ошибка!", Toast.LENGTH_SHORT).show();
-                countOfQuestions++;
+                numberOfCorrectAnswersInARow = 0;
             }
-
+            countOfQuestions++;
+            if (numberOfCorrectAnswersInARow == 5) {
+                timer.cancel();
+                globalCount += 3000;
+                startTime =globalCount;
+                numberOfCorrectAnswersInARow = 0;
+                timer();
+            }
             playNext();
+
         }
     }
 
-    private String getTime(long ms) {
+    public static String getTime(long ms) {
         int seconds = (int) ms / 1000;
         int minutes = seconds / 60;
         seconds = seconds % 60;
         return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
     }
+
+    private void timer() {
+
+        timer = new CountDownTimer(startTime, 100) {
+
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                textViewTimer.setText(getTime(millisUntilFinished));
+                globalCount = millisUntilFinished;
+
+                if (millisUntilFinished < 5000) {
+                    textViewTimer.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                }
+
+            }
+
+            @Override
+            public void onFinish() {
+                gameOver = true;
+                Intent i = new Intent(MainActivity.this, ScoreActivity.class);
+                i.putExtra("result", countOfWriteAnswers);
+                startActivity(i);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                int max = preferences.getInt("max", 0);
+                if (countOfWriteAnswers >= max) {
+                    preferences.edit().putInt("max", countOfWriteAnswers).apply();
+                }
+            }
+        };
+        timer.start();
+    }
+
+
 }

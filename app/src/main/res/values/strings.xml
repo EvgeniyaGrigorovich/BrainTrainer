@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">BrainTrainer</string>
     <string name="button_start_new_game">НАЧАТЬ ЗАНОВО</string>
+    <string name="brain_trainer">Brain Trainer</string>
+    <string name="rules_of_the_game">Правила игры:\n\nЗа 15 секунд дать наибольшее число правильных
+        ответов.\nЗа каждые пять правильных ответов подряд вам будет добавляться 3 бонусных
+        секунды.\n\nДа прибудет с вами сила!</string>
+    <string name="text_start_game">Начать игру</string>
 </resources>
